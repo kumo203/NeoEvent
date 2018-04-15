@@ -101,7 +101,7 @@ namespace NeoIvp_WebApp.Controllers
         }
         #endregion //EstatesAPI
 
-        #region BorrowAPI
+        #region RoomCheckinApi
         static private readonly IFaceServiceClient faceServiceClient =
             new FaceServiceClient("c47f5b0cf3ea48f7b0a1ec1457f9a0d7",       // Azure Face API Key
             "https://westus2.api.cognitive.microsoft.com/face/v1.0");       // Azure Region Face API URL
@@ -177,8 +177,18 @@ namespace NeoIvp_WebApp.Controllers
                 return fail;
             }
 
-            var jsrc = new NeoLoggingKV(personId,name);
-            var json = JsonConvert.SerializeObject(jsrc);
+            var json = @"
+{ 
+ ""jsonrpc"": ""2.0"", 
+ ""id"":119,
+ ""method"": ""invokefunction"",
+ ""params"":[
+           ""0x6b5ebaf00d5627c0f9014df6fa3ff1432ce2e4a9"",
+           ""Write"",
+           [""" +  personId + @""", """ + name + @"""]]
+}
+";
+
             using (var client = new HttpClient())
             {
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -194,25 +204,9 @@ namespace NeoIvp_WebApp.Controllers
             return ret;
         }
 
-        [JsonObject]
-        public class NeoLoggingKV
-        {
-            [JsonProperty("Key")]
-            public string Key { get; private set; }
+        #endregion //RoomCheckinApi
 
-            [JsonProperty("Value")]
-            public string Value { get; private set; }
-
-            public NeoLoggingKV(string key, string value)
-            {
-                this.Key = key;
-                this.Value = value;
-            }
-        }
-
-        #endregion //BorrowAPI
-
-        #region CheckoutAPI
+        #region RoomCheckoutAPI
         // Todo: Change the mock logic to actual
         public class CheckoutArgument
         {
@@ -255,7 +249,7 @@ namespace NeoIvp_WebApp.Controllers
 
             return ret;
         }
-        #endregion //CheckoutAPI
+        #endregion //RoomCheckoutAPI
 
     }
 }
